@@ -18,7 +18,7 @@ def leiaInt(msg):
             return 0
         else:
             return n
-
+        #teste
 def linha(size=50):
     return '-' * size
 
