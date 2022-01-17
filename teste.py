@@ -18,7 +18,7 @@ def leiaInt(msg):
             return 0
         else:
             return n
-        #teste
+
 def linha(size=50):
     return '-' * size
 
@@ -62,8 +62,10 @@ while True:
             tn.read_until(b"Password:")
             tn.write(pwd[15:21] + b'\r\n')
             tn.read_until(b'~ # ')
-            tn.write(b'reboot\n')
-            tn.read_until(b'reboot\r\n')
+            tn.write(b'cfm set wl5g.lock.channel "48"')
+            
+            #tn.write(b'cfm set wl5g.lock.channel' + f'"{canal_5}"\n')
+            #tn.read_until(b'cfm set wl5g.lock.channel' + f'"{canal_5}"\r\n')
             break
 
     elif answer == 2:
