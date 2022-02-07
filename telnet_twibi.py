@@ -1,10 +1,12 @@
 from telnetlib import Telnet
 import time
-#import requests
+import requests
 import os
 import sys
+import logging
 
 ### Menu ####
+
 
 def leiaInt(msg):
     while True:
@@ -60,10 +62,23 @@ def largura_5():
 def largura_2():
     header('Larguras de banda suportadas para 2.4Ghz: 20 e 40')
 
+def telnet_habil():
+    header('Habilitando telnet, aguarde...')
+
 #lembrete()
 #time.sleep(3)
 #os.system('cls')
 #header('Projeto Dexter - V1.0')
+
+try:
+    telnet_habil()
+    r = requests.post('http://192.168.5.1/goform/set', json={"login":{"pwd":"25d55ad283aa400af464c76d713c07ad"}})
+    # print(f"Status Code: {r.status_code}, Response: {r.json()}")
+    r = requests.get('http://192.168.5.1/goform/telnet', timeout=10)
+    # print(r.text)
+except Exception:
+    logging.debug('Twibi - telnet enabled!')
+    time.sleep(1)
 
 while True:
     answer = menu(['Alterar canal do Wi-Fi 5Ghz', 'Alterar canal do Wi-Fi 2.4Ghz', 'Alterar largura de banda 5Ghz', 'Alterar largura de banda 2.4Ghz', 'Desabilitar SIP ALG', 'Sair'])
@@ -138,29 +153,52 @@ while True:
                     tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
                     # tn.interact()
                     tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    time.sleep(2)
-                    tn.write(b'reboot\n')
-                    tn.read_until(b"~ # ")
-                    OK()
-                    time.sleep(3)
-                    os.system('cls')
-                    break
+                    if (canal_2 == 10) or (canal_2 == 11) or (canal_2 == 12) or (canal_2 == 13):
+                        tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        time.sleep(2)
+                        tn.write(b'reboot\n')
+                        tn.read_until(b"~ # ")
+                        OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        break
+                    else:
+                        tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        time.sleep(2)
+                        tn.write(b'reboot\n')
+                        tn.read_until(b"~ # ")
+                        OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        break
                 elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                     tn.write(b'root\r\n')
                     tn.read_until(b"Password:")
                     tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
                     # tn.interact()
                     tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    time.sleep(2)
-                    tn.write(b'reboot\n')
-                    tn.read_until(b"~ # ")
-                    OK()
-                    time.sleep(1)
-                    break
+                    if (canal_2 == 10) or (canal_2 == 11) or (canal_2 == 12) or (canal_2 == 13):
+                        tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        time.sleep(2)
+                        tn.write(b'reboot\n')
+                        tn.read_until(b"~ # ")
+                        OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        break
+                    else:
+                        tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        time.sleep(2)
+                        tn.write(b'reboot\n')
+                        tn.read_until(b"~ # ")
+                        OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        break
         else:
             print('Você digitou um canal inválido, tente novamente.')
             time.sleep(3)
