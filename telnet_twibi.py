@@ -5,6 +5,7 @@ import os
 import logging
 import hashlib
 import getpass
+import netifaces
 
 ### Menu ####
 
@@ -77,6 +78,8 @@ def telnet_ok():
 while True:
 
     try:
+        gateway = netifaces.gateways()
+        default_gateway = gateway['default'][netifaces.AF_INET][0]
         senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
         os.system('cls')
         hash = hashlib.md5(senha_admin)
