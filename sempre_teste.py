@@ -1,12 +1,8 @@
-class Point:
-    """ Point class for representing and manipulating x,y coordinates. """
+import time
 
-    def __init__(self):
+import requests
+r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": 'dfdc213123188d70c359ce254f3a7af6'}}, timeout=5)
+print(f"Status Code: {r.status_code}, Response: {r.json()}")
+r = requests.get('http://192.168.5.1/goform/telnet', timeout=10)
+print(r.text)
 
-        self.x = 0
-        self.y = 0
-
-p = Point()         # Instantiate an object of type Point
-q = Point()         # and make a second point
-
-print("Nothing seems to have happened with the points")

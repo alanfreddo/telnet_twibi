@@ -49,8 +49,14 @@ def menu(lista):
     opc = leiaInt('Digite sua opção: ')
     return opc
 
+def telnet_habil():
+    header('Habilitando telnet, aguarde...')
+
+def telnet_ok():
+    header('Telnet habilitado com sucesso!!!')
+
 def menu_principal():
-    answer = menu(['Alterar canal do Wi-Fi 5Ghz', 'Alterar canal do Wi-Fi 2.4Ghz', 'Alterar largura de banda 5Ghz', 'Alterar largura de banda 2.4Ghz', 'Desabilitar SIP ALG', 'Sair'])
+    answer = menu(['Canal do Wi-Fi 5Ghz', 'Canal do Wi-Fi 2.4Ghz', 'Largura de banda 5Ghz', 'Largura de banda 2.4Ghz', 'SIP ALG', 'Sair'])
     if answer == 1:
         os.system('cls')
         canais_5()
@@ -69,32 +75,8 @@ def menu_principal():
 
     elif answer == 5:
         os.system('cls')
-        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
-            # tn.set_debuglevel(1)
-            pwd = tn.read_until(b"login:").decode('utf-8')
-            pwd_str = str(pwd)
-            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
-                tn.write(b'root\r\n')
-                tn.read_until(b"Password:")
-                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
-                # tn.interact()
-                tn.read_until(b"~ # ")
-                tn.write(b'echo sip 0 > proc/alg;\n')
-                tn.read_until(b"~ # ")
-                os.system('cls')
-                OK()
-                time.sleep(3)
-            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
-                tn.write(b'root\r\n')
-                tn.read_until(b"Password:")
-                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
-                # tn.interact()
-                tn.read_until(b"~ # ")
-                tn.write(b'echo sip 0 > proc/alg;\n')
-                tn.read_until(b"~ # ")
-                OK()
-                time.sleep(3)
-                os.system('cls')
+        sip_alg()
+
     elif answer == 6:
         os.system('cls')
         header('INTELBRAS, SEMPRE PRÓXIMA.')
@@ -125,6 +107,8 @@ def canais_5():
                 if (canal_5 == 149) or (canal_5 == 153) or (canal_5 == 157) or (canal_5 == 161):
                     tn.write(b'cfm set wl5g.lock.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
                     tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
+                    tn.read_until(b"~ # ")
                     tn.write(b'reboot\n')
                     tn.read_until(b"~ # ")
                     OK()
@@ -133,6 +117,8 @@ def canais_5():
                     exit()
                 else:
                     tn.write(b'cfm set wl5g.lock.channel ' + f'{canal_5:"^4}'.encode('ascii') + b'\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
                     tn.read_until(b"~ # ")
                     tn.write(b'reboot\n')
                     tn.read_until(b"~ # ")
@@ -292,7 +278,7 @@ def largura_2G():
             # tn.set_debuglevel(1)
             pwd = tn.read_until(b"login:").decode('utf-8')
             pwd_str = str(pwd)
-            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+            if pwd_str[3:6] == 'Int':  #TWIBI FAST / GIGA
                 tn.write(b'root\r\n')
                 tn.read_until(b"Password:")
                 tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
@@ -325,12 +311,47 @@ def largura_2G():
         time.sleep(3)
         os.system('cls')
         return largura_2G()
-
-def telnet_habil():
-    header('Habilitando telnet, aguarde...')
-
-def telnet_ok():
-    header('Telnet habilitado com sucesso!!!')
+def sip_alg():
+    with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+        # tn.set_debuglevel(1)
+        pwd = tn.read_until(b"login:").decode('utf-8')
+        pwd_str = str(pwd)
+        if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+            tn.write(b'root\r\n')
+            tn.read_until(b"Password:")
+            tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+            # tn.interact()
+            tn.read_until(b"~ # ")
+            tn.write(b'cfm set sip_en 0\n')
+            tn.read_until(b"~ # ")
+            os.system('cls')
+            OK()
+            time.sleep(2)
+            tn.read_until(b"~ # ")
+            tn.write(b'reboot\n')
+            tn.read_until(b"~ # ")
+            os.system('cls')
+            OK()
+            time.sleep(1)
+            exit()
+        elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+            tn.write(b'root\r\n')
+            tn.read_until(b"Password:")
+            tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+            # tn.interact()
+            tn.read_until(b"~ # ")
+            tn.write(b'cfm set sip_en 0\n')
+            tn.read_until(b"~ # ")
+            OK()
+            time.sleep(2)
+            os.system('cls')
+            tn.read_until(b"~ # ")
+            tn.write(b'reboot\n')
+            tn.read_until(b"~ # ")
+            os.system('cls')
+            OK()
+            time.sleep(1)
+            exit()
 
 #lembrete()
 #time.sleep(3)
@@ -348,8 +369,8 @@ while True:
         encrypt = hash.hexdigest()
         telnet_habil()
         # print(encrypt)
-        r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd":f'{encrypt}'}})
-        # print(f"Status Code: {r.status_code}, Response: {r.json()}")
+        r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+        print(f"Status Code: {r.status_code}, Response: {r.json()}")
         if f'{r.json()}' == "{'errcode': '1'}":
             time.sleep(2)
             os.system('cls')
@@ -359,6 +380,7 @@ while True:
             continue
         else:
             r = requests.get('http://192.168.5.1/goform/telnet', timeout=10)
+            print(r.text)
     except Exception:
         logging.debug('Twibi - telnet enabled!')
         time.sleep(1)
