@@ -176,24 +176,30 @@ def canais_5():
                 tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
                 # tn.interact()
                 tn.read_until(b"~ # ")
-                mostra_canal = tn.write(b'cat proc/wlan0/mib_rf\n')
-                tn.read_until(b"~ # ")
-                mostra_canal_str = str(mostra_canal)
-                print(type(mostra_canal_str))
+                tn.write('cfm get wl5g.lock.channel'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_canal5g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('O canal 5Ghz configurado é: ' + m_canal5g.split()[3])
                 time.sleep(5)
                 return menu_principal()
 
             elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                # tn.set_debuglevel(1)
                 tn.write(b'root\r\n')
                 tn.read_until(b"Password:")
                 tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
                 # tn.interact()
                 tn.read_until(b"~ # ")
-                tn.write(b'cat proc/wlan0/mib_rf\n')
-                msg = tn.read_until(b"dot11channel: ")
-                msg_str = str(msg)
-                print(msg_str)
-                tn.read_until(b"~ # ")
+                tn.write('cfm get wl5g.lock.channel'.encode('ascii') + b'\n')
+                time.sleep(1)
+                tn.write(b"exit\n")
+                time.sleep(1)
+                m_canal5g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('O canal 5Ghz configurado é: ' + m_canal5g.split()[3])
                 time.sleep(5)
                 return menu_principal()
     elif copc5 == 3:
@@ -289,9 +295,13 @@ def canais_2():
                 tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
                 # tn.interact()
                 tn.read_until(b"~ # ")
-                mostra_canal = tn.write(b'cat proc/wlan1/mib_rf\n')
-                tn.read_until(b"~ # ")
-                print(mostra_canal)
+                tn.write('cfm get wl2g.lock.channel'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_canal2g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('O canal 2.4Ghz configurado é: ' + m_canal2g.split()[3])
                 time.sleep(5)
                 return menu_principal()
 
@@ -303,7 +313,13 @@ def canais_2():
                 tn.read_until(b"~ # ")
                 mostra_canal = tn.write(b'cat proc/wlan1/mib_rf\n')
                 tn.read_until(b"~ # ")
-                print(mostra_canal)
+                tn.write('cfm get wl2g.lock.channel'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_canal2g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('O canal 2.4Ghz configurado é: ' + m_canal2g.split()[3])
                 time.sleep(5)
                 return menu_principal()
     elif copc2 == 3:
@@ -359,7 +375,41 @@ def largura_5G():
             os.system('cls')
             return largura_5G()
     elif lopc5 == 2:
-        pass
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl5g.lock.bandwidth'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_largura5g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('A largura de banda configurada em 5Ghz é: ' + m_largura5g.split()[3])
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl5g.lock.bandwidth'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_largura5g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('A largura de banda configurada em 5Ghz é: ' + m_largura5g.split()[3])
+                time.sleep(5)
+                return menu_principal()
 
     elif lopc5 == 3:
         return menu_principal()
@@ -415,7 +465,41 @@ def largura_2G():
             return largura_2G()
 
     elif lopc2 == 2:
-        pass
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl2g.lock.bandwidth'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_largura2g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('A largura de banda configurada em 2.4Ghz é: ' + m_largura2g.split()[3])
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl2g.lock.bandwidth'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_largura2g = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('A largura de banda configurada em 2.4Ghz é: ' + m_largura2g.split()[3])
+                time.sleep(5)
+                return menu_principal()
 
     elif lopc2 == 3:
         return menu_principal()
@@ -427,7 +511,7 @@ def largura_2G():
         return largura_2G()
 
 def sip_alg():
-    alg = menu(['Ativar', 'Desativar', 'Voltar'])
+    alg = menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
     if alg == 1:
         with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
             # tn.set_debuglevel(1)
@@ -512,6 +596,49 @@ def sip_alg():
                 exit()
 
     elif alg == 3:
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get sip_en'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_sip = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                if m_sip == 0:
+                    header('SIP ALG ESTA DESATIVADO ')
+                else:
+                    header("SIP ALG ESTA ATIVADO")
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get sip_en'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_sip = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                if m_sip == 0:
+                    header('SIP ALG ESTA DESATIVADO ')
+                else:
+                    header("SIP ALG ESTA ATIV0")
+                time.sleep(5)
+                return menu_principal()
+
+    elif alg == 4:
         return menu_principal()
 
     else:
@@ -521,7 +648,7 @@ def sip_alg():
         return sip_alg()
 
 def ipv6():
-    opcipv6 = menu(['Ativar', 'Desativar', 'Voltar'])
+    opcipv6 = menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
     if opcipv6 == 1:
         with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
             # tn.set_debuglevel(1)
@@ -590,7 +717,51 @@ def ipv6():
                 time.sleep(3)
                 os.system('cls')
                 exit()
+
     elif opcipv6 == 3:
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get ipv6.enable'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ipv6 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                if m_ipv6 == 0:
+                    header('IPv6 ESTA DESATIVADO ')
+                else:
+                    header("IPv6 ESTA ATIVADO")
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get ipv6.enable'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ipv6 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                if m_ipv6 == 0:
+                    header('IPv6 ESTA DESATIVADO ')
+                else:
+                    header("IPv6 ESTA ATIVADO")
+                time.sleep(5)
+                return menu_principal()
+
+    elif opcipv6 == 4:
         return menu_principal()
 
     else:
@@ -600,7 +771,7 @@ def ipv6():
         return ipv6()
 
 def ssid():
-    opcssid = menu(['Alterar SSID 2.4Ghz', 'Alterar SSID 5Ghz', 'Voltar'])
+    opcssid = menu(['Alterar SSID 2.4Ghz', 'Alterar SSID 5Ghz', 'Status SSID 2.4Ghz', 'Status SSID 5Ghz', 'Voltar'])
     if opcssid == 1:
         ssid_2g = input('Digite o nome do SSID para a rede 2.4Ghz: ')
         with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
@@ -673,6 +844,79 @@ def ssid():
                 os.system('cls')
                 exit()
     elif opcssid == 3:
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl2g.ssid0.ssid'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ssid2 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('SSID atual da rede 2.4Ghz é: '+ m_ssid2.split()[3])
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl2g.ssid0.ssid'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ssid2 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('SSID atual da rede 2.4Ghz é: ' + m_ssid2.split()[3])
+                time.sleep(5)
+                return menu_principal()
+
+    elif opcssid == 4:
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl5g.ssid0.ssid'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ssid5 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('SSID atual da rede 5Ghz é: ' + m_ssid5.split()[3])
+                time.sleep(5)
+                return menu_principal()
+
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write('cfm get wl5g.ssid0.ssid'.encode('ascii') + b'\n')
+                time.sleep(0.5)
+                tn.write(b"exit\n")
+                time.sleep(0.5)
+                m_ssid5 = str(tn.read_very_eager().decode('ascii'))
+                os.system('cls')
+                print('SSID atual da rede 5Ghz é: ' + m_ssid5.split()[3])
+                time.sleep(5)
+                return menu_principal()
+    elif opcssid == 5:
         return menu_principal()
 
     else:
@@ -703,7 +947,7 @@ while True:
             continue
         else:
             r = requests.get('http://192.168.5.1/goform/telnet', timeout=10)
-            print(r.text)
+            # print(r.text)
     except Exception:
         logging.debug('Twibi - telnet enabled!')
         time.sleep(1)
@@ -713,20 +957,3 @@ while True:
     os.system('cls')
     menu_principal()
     
-
-
-
-
-
-
-
-#
-
-
-
-
-
-##
-##
-
-###
