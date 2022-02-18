@@ -13,17 +13,15 @@ class twibi:
     def __init__(self):
         pass
 
-    def habilita_telnet(self, senha_admin):
-        self.senha_admin = senha_admin
+    def habilita_telnet(self):
         try:
-            # gateway = netifaces.gateways()
-            # default_gateway = gateway['default'][netifaces.AF_INET][0]
+            senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
             os.system('cls')
             hash = hashlib.md5(senha_admin)
             encrypt = hash.hexdigest()
             self.telnet_habil()
             # print(encrypt)
-            r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": f'{encrypt}'}})
+            r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
             # print(f"Status Code: {r.status_code}, Response: {r.json()}")
             if f'{r.json()}' == "{'errcode': '1'}":
                 time.sleep(2)
@@ -99,5 +97,6 @@ class twibi:
         self.header('Telnet habilitado com sucesso!!!')
 
 t = twibi()
-senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
-t.habilita_telnet(senha_admin)
+t.habilita_telnet()
+t.menu_principal()
+
