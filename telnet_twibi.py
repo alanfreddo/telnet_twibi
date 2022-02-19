@@ -64,6 +64,8 @@ class twibi:
                 self.telnet_habil()
                 # print(encrypt)
                 r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+                cookies1 = dict(r.cookies)
+                # print(cookies1)
                 # print(f"Status Code: {r.status_code}, Response: {r.json()}")
                 if f'{r.json()}' == "{'errcode': '1'}":
                     time.sleep(2)
@@ -73,7 +75,7 @@ class twibi:
                     os.system('cls')
                     continue
                 else:
-                    r = requests.get('http://192.168.5.1/goform/telnet', timeout=10)
+                    r = requests.get('http://192.168.5.1/goform/telnet', cookies=cookies1, timeout=10)
                     # print(r.text)
             except Exception:
                 logging.debug('Twibi - telnet enabled!')
@@ -97,6 +99,8 @@ class twibi:
                 self.telnet_habil()
                 # print(encrypt)
                 r = requests.post('http://' + ip_alterado + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+                cookies1 = dict(r.cookies)
+                # print(cookies1)
                 # print(f"Status Code: {r.status_code}, Response: {r.json()}")
                 if f'{r.json()}' == "{'errcode': '1'}":
                     time.sleep(2)
@@ -106,7 +110,7 @@ class twibi:
                     os.system('cls')
                     continue
                 else:
-                    r = requests.get('http://' + ip_alterado + '/goform/telnet', timeout=10)
+                    r = requests.get('http://' + ip_alterado + '/goform/telnet', cookies=cookies1, timeout=10)
                     # print(r.text)
             except Exception:
                 logging.debug('Twibi - telnet enabled!')
@@ -1017,7 +1021,7 @@ class twibi:
             os.system('cls')
             return self.ssid()
 
-    def ip_default(self, host="192.168.6.1", port=53, timeout=3):
+    def ip_default(self, host="192.168.5.1", port=53, timeout=3):
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
