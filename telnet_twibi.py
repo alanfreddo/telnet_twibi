@@ -6,7 +6,6 @@ import logging
 import hashlib
 import getpass
 import socket
-import netifaces
 
 class twibi:
 
@@ -19,9 +18,13 @@ class twibi:
                 n = int(input(msg))
             except (ValueError, TypeError):
                 print('\033[31mERRO: Digite um número inteiro válido! \033[m')
+                time.sleep(2)
+                os.system('cls')
                 continue
             except (KeyboardInterrupt):
                 print('\n\033[31mTempo esgotado, tente novamente. \033[m')
+                time.sleep(2)
+                os.system('cls')
                 return 0
             else:
                 return n
@@ -87,7 +90,6 @@ class twibi:
             self.menu_principal()
 
     def enable_telnet_modify(self):
-        ip_alterado = input('Digite o endereço IP do Twibi: ')
         while True:
             try:
                 # gateway = netifaces.gateways()
@@ -98,7 +100,7 @@ class twibi:
                 encrypt = hash.hexdigest()
                 self.telnet_habil()
                 # print(encrypt)
-                r = requests.post('http://' + ip_alterado + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+                r = requests.post('http://' + self.ip_alterado + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
                 cookies1 = dict(r.cookies)
                 # print(cookies1)
                 # print(f"Status Code: {r.status_code}, Response: {r.json()}")
@@ -110,7 +112,7 @@ class twibi:
                     os.system('cls')
                     continue
                 else:
-                    r = requests.get('http://' + ip_alterado + '/goform/telnet', cookies=cookies1, timeout=10)
+                    r = requests.get('http://' + self.ip_alterado + '/goform/telnet', cookies=cookies1, timeout=10)
                     # print(r.text)
             except Exception:
                 logging.debug('Twibi - telnet enabled!')
@@ -168,8 +170,9 @@ class twibi:
             exit()
 
         else:
-            print('\033[31mERRO: Digite uma opoção válida!\033[m')
+            print('\033[31mERRO: Digite uma opção válida!\033[m')
             time.sleep(3)
+            os.system('cls')
             return self.menu_principal()
 
     def canais_5(self):
@@ -194,8 +197,10 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            tn.write(b'reboot\n')
                             tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            # tn.read_until(b"~ # ")
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
@@ -206,8 +211,10 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            tn.write(b'reboot\n')
                             tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            # tn.read_until(b"~ # ")
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
@@ -224,8 +231,10 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            tn.write(b'reboot\n')
                             tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            # tn.read_until(b"~ # ")
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
@@ -236,8 +245,10 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            tn.write(b'reboot\n')
                             tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
+                            # tn.read_until(b"~ # ")
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
@@ -317,24 +328,27 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
+                            tn.write(b'cfm set wl2g.public.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
+                            tn.read_until(b"~ # ")
                             tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
                             tn.read_until(b"~ # ")
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            exit()
                             return self.canais_2()
                         else:
                             tn.write(b'cfm set auto_channel "0"\n')
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
+                            tn.write(b'cfm set wl2g.public.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
+                            tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
+
                             tn.read_until(b"~ # ")
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            exit()
                             return self.canais_2()
                     elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                         tn.write(b'root\r\n')
@@ -347,24 +361,28 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
+                            tn.write(b'cfm set wl2g.public.channel ' + f'{canal_2:"^4}'.encode('ascii') + b'\n')
+                            tn.read_until(b"~ # ")
                             tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
                             tn.read_until(b"~ # ")
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            exit()
                             return self.canais_2()
                         else:
                             tn.write(b'cfm set auto_channel "0"\n')
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl2g.lock.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
+                            tn.write(b'cfm set wl2g.public.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
+                            tn.read_until(b"~ # ")
+                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
+                            # tn.read_until(b"~ # ")
+                            tn.write(b'reboot\n')
                             tn.read_until(b"~ # ")
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            exit()
                             return self.canais_2()
             else:
                 print('\033[31mERRO: Você digitou um canal inválido, tente novamente! \033[m')
@@ -1021,14 +1039,102 @@ class twibi:
             os.system('cls')
             return self.ssid()
 
-    def ip_default(self, host="192.168.5.1", port=53, timeout=3):
+    def ip_default(self, host="192.168.5.1", port=53, timeout=2):
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
             return self.enable_telnet_default()
         except socket.error as ex:
+            return self.check_ping()
+
+    def check_ping(self, port=53, timeout=2):
+        self.ip_alterado = input('Digite o endereço IP do Twibi: ')
+        try:
+            socket.setdefaulttimeout(timeout)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(((self.ip_alterado), port))
             return self.enable_telnet_modify()
-            
+        except socket.error as ex:
+            print('\033[31mERRO:Desculpe não encontramos o IP digitado. Tente novamente!!!\033[m')
+            time.sleep(3)
+            os.system('cls')
+            return self.check_ping()
+
+    def verify_apply(self, host="192.168.5.1", port=53, timeout=2):
+
+        try:
+            socket.setdefaulttimeout(timeout)
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+            return self.apply_config_default()
+        except socket.error as ex:
+            return self.apply_config_modify()
+
+    def apply_config_default(self):
+        with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write(b'reboot\n')
+                tn.read_until(b"~ # ")
+                self.OK()
+                time.sleep(3)
+                os.system('cls')
+                exit()
+                return self.ipv6()
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write(b'cfm set ipv6.enable 1\n')
+                tn.read_until(b"~ # ")
+                tn.write(b'reboot\n')
+                tn.read_until(b"~ # ")
+                self.OK()
+                time.sleep(3)
+                os.system('cls')
+                exit()
+                return self.ipv6()
+
+    def apply_config_modify(self):
+        with Telnet(self.ip_alterado, 23, timeout=3) as tn:  # LOGIN TELNET
+            # tn.set_debuglevel(1)
+            pwd = tn.read_until(b"login:").decode('utf-8')
+            pwd_str = str(pwd)
+            if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write(b'reboot\n')
+                tn.read_until(b"~ # ")
+                self.OK()
+                time.sleep(3)
+                os.system('cls')
+                exit()
+                return self.ipv6()
+            elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                tn.write(b'root\r\n')
+                tn.read_until(b"Password:")
+                tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                # tn.interact()
+                tn.read_until(b"~ # ")
+                tn.write(b'cfm set ipv6.enable 1\n')
+                tn.read_until(b"~ # ")
+                tn.write(b'reboot\n')
+                tn.read_until(b"~ # ")
+                self.OK()
+                time.sleep(3)
+                os.system('cls')
+                exit()
+                return self.ipv6()
 
 t = twibi()
 t.ip_default()
