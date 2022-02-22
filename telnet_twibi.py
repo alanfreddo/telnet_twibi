@@ -6,6 +6,7 @@ import logging
 import hashlib
 import getpass
 import socket
+import netifaces
 
 class twibi:
 
@@ -55,73 +56,55 @@ class twibi:
     def telnet_habil(self):
         self.header('Habilitando telnet, aguarde...')
 
-    def enable_telnet_default(self):
+    def enable_telnet(self):
         while True:
             try:
                 # gateway = netifaces.gateways()
-                # default_gateway = gateway['default'][netifaces.AF_INET][0]
-                senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
-                os.system('cls')
-                hash = hashlib.md5(senha_admin)
-                encrypt = hash.hexdigest()
-                self.telnet_habil()
-                # print(encrypt)
-                r = requests.post('http://192.168.5.1/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
-                cookies1 = dict(r.cookies)
-                # print(cookies1)
-                # print(f"Status Code: {r.status_code}, Response: {r.json()}")
-                if f'{r.json()}' == "{'errcode': '1'}":
-                    time.sleep(2)
+                # self.default_gateway = gateway['default'][netifaces.AF_INET][0]
+                if self.default_gateway == '192.168.5.1':
+                    self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
                     os.system('cls')
-                    print('\033[31mERRO: Senha incorreta, tente novamente! \033[m')
-                    time.sleep(3)
-                    os.system('cls')
-                    continue
-                else:
-                    r = requests.get('http://192.168.5.1/goform/telnet', cookies=cookies1, timeout=10)
-                    # print(r.text)
-            except Exception:
-                logging.debug('Twibi - telnet enabled!')
-                time.sleep(1)
-            os.system('cls')
-            self.telnet_ok()
-            time.sleep(2)
-            os.system('cls')
-            self.menu_principal()
+                    hash = hashlib.md5(self.senha_admin)
+                    encrypt = hash.hexdigest()
+                    self.telnet_habil()
+                    # print(encrypt)
+                    r = requests.post('http://' + f'{self.default_gateway}' + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+                    cookies1 = dict(r.cookies)
+                    # print(cookies1)
+                    # print(f"Status Code: {r.status_code}, Response: {r.json()}")
+                    if f'{r.json()}' == "{'errcode': '1'}":
+                        time.sleep(2)
+                        os.system('cls')
+                        print('\033[31mERRO: Senha incorreta, tente novamente! \033[m')
+                        time.sleep(3)
+                        os.system('cls')
+                        continue
+                    else:
+                        r = requests.get('http://' + f'{self.default_gateway}' + '/goform/telnet', cookies=cookies1, timeout=10)
+                        # print(r.text)
 
-    def enable_telnet_modify(self):
-        while True:
-            try:
-                # gateway = netifaces.gateways()
-                # default_gateway = gateway['default'][netifaces.AF_INET][0]
-                senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
-                os.system('cls')
-                hash = hashlib.md5(senha_admin)
-                encrypt = hash.hexdigest()
-                self.telnet_habil()
-                # print(encrypt)
-                r = requests.post('http://' + self.ip_alterado + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
-                cookies1 = dict(r.cookies)
-                # print(cookies1)
-                # print(f"Status Code: {r.status_code}, Response: {r.json()}")
-                if f'{r.json()}' == "{'errcode': '1'}":
-                    time.sleep(2)
-                    os.system('cls')
-                    print('\033[31mERRO: Senha incorreta, tente novamente! \033[m')
-                    time.sleep(3)
-                    os.system('cls')
-                    continue
                 else:
-                    r = requests.get('http://' + self.ip_alterado + '/goform/telnet', cookies=cookies1, timeout=10)
-                    # print(r.text)
+                    self.ip_verify = input('Digite o endereço IP do seu Twibi: ')
+                    timeout = 2
+                    port = 53
+                    self.default_gateway = self.ip_verify
+                    try:
+                        socket.setdefaulttimeout(timeout)
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
+                        return self.senha_admin
+                    except socket.error as ex:
+                        self.header('\033[31mERRO: SEM CONEXÃO COM O IP DIGITADO, TENTE NOVAMENTE!\033[m')
+                        time.sleep(3)
+                        return self.enable_telnet()
+
             except Exception:
                 logging.debug('Twibi - telnet enabled!')
                 time.sleep(1)
-            os.system('cls')
-            self.telnet_ok()
-            time.sleep(2)
-            os.system('cls')
-            self.menu_principal()
+                os.system('cls')
+                self.telnet_ok()
+                time.sleep(2)
+                os.system('cls')
+                self.menu_principal()
 
     def ip_modify(self):
         ip_address_modify = input('Digite o IP do seu Twibi: ')
@@ -182,8 +165,8 @@ class twibi:
             canal_5 = self.leiaInt('Digite o canal desejado: ')
             if (canal_5 == 36) or (canal_5 == 40) or (canal_5 == 44) or (canal_5 == 46) or (canal_5 == 48) or (
                     canal_5 == 149) or (canal_5 == 153) or (canal_5 == 157) or (canal_5 == 161):
-                with Telnet('192.168.5.1', 23, timeout=3) as tn:  #LOGIN TELNET
-                    # tn.set_debuglevel(1)
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  #LOGIN TELNET
+                    tn.set_debuglevel(1)
                     pwd = tn.read_until(b"login:").decode('utf-8')
                     pwd_str = str(pwd)
                     if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
@@ -197,10 +180,9 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl5g.public.channel ' + f'{canal_5:"^5}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            tn.write(b'reboot\n')
+                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
                             tn.read_until(b"~ # ")
-                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=5\n')
-                            # tn.read_until(b"~ # ")
+                            tn.write(b'reboot\n')
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
@@ -260,7 +242,7 @@ class twibi:
                 os.system('cls')
                 return self.canais_5()
         elif copc5 == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -313,7 +295,7 @@ class twibi:
             if (canal_2 == 1) or (canal_2 == 2) or (canal_2 == 3) or (canal_2 == 4) or (canal_2 == 5) or (canal_2 == 6) or (
                     canal_2 == 7) or (canal_2 == 8) or (canal_2 == 9) or (canal_2 == 10) or (canal_2 == 11) or (
                     canal_2 == 12) or (canal_2 == 13):
-                with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                     # tn.set_debuglevel(1)
                     pwd = tn.read_until(b"login:").decode('utf-8')
                     pwd_str = str(pwd)
@@ -343,8 +325,7 @@ class twibi:
                             tn.read_until(b"~ # ")
                             tn.write(b'cfm set wl2g.public.channel ' + f'{canal_2:"^3}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
-                            # tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
-
+                            tn.write(b'cfm post netctrl 19?op=3,wl_rate=24\n')
                             tn.read_until(b"~ # ")
                             os.system('cls')
                             self.OK()
@@ -390,7 +371,7 @@ class twibi:
                 os.system('cls')
                 return self.canais_2()
         elif copc2 == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -416,8 +397,6 @@ class twibi:
                     tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
                     # tn.interact()
                     tn.read_until(b"~ # ")
-                    mostra_canal = tn.write(b'cat proc/wlan1/mib_rf\n')
-                    tn.read_until(b"~ # ")
                     tn.write('cfm get wl2g.lock.channel'.encode('ascii') + b'\n')
                     time.sleep(0.5)
                     tn.write(b"exit\n")
@@ -442,7 +421,7 @@ class twibi:
             self.header('Larguras de banda suportadas para 5Ghz: 20, 40 e 80')
             largura_5 = self.leiaInt('Qual a largura de banda 5Ghz você deseja: ')
             if (largura_5 == 20) or (largura_5 == 40) or (largura_5 == 80):
-                with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                     # tn.set_debuglevel(1)
                     pwd = tn.read_until(b"login:").decode('utf-8')
                     pwd_str = str(pwd)
@@ -482,7 +461,7 @@ class twibi:
                 os.system('cls')
                 return self.largura_5G()
         elif lopc5 == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -533,7 +512,7 @@ class twibi:
             self.header('Larguras de banda suportadas para 2.4Ghz: 20 e 40')
             largura_2 = self.leiaInt('Qual a largura de banda 2.4Ghz você deseja: ')
             if (largura_2 == 20) or (largura_2 == 40):
-                with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                     # tn.set_debuglevel(1)
                     pwd = tn.read_until(b"login:").decode('utf-8')
                     pwd_str = str(pwd)
@@ -574,7 +553,7 @@ class twibi:
                 return self.largura_2G()
 
         elif lopc2 == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -622,7 +601,7 @@ class twibi:
     def sip_alg(self):
         alg = self.menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
         if alg == 1:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -665,7 +644,7 @@ class twibi:
                     exit()
                     return self.sip_alg()
         elif alg == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -708,7 +687,7 @@ class twibi:
                     exit()
                     return self.sip_alg()
         elif alg == 3:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -762,7 +741,7 @@ class twibi:
     def ipv6(self):
         opcipv6 = self.menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
         if opcipv6 == 1:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -797,7 +776,7 @@ class twibi:
                     exit()
                     return self.ipv6()
         elif opcipv6 == 2:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -832,7 +811,7 @@ class twibi:
                     exit()
                     return self.ipv6()
         elif opcipv6 == 3:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -887,7 +866,7 @@ class twibi:
         opcssid = self.menu(['Alterar SSID 2.4Ghz', 'Alterar SSID 5Ghz', 'Status SSID 2.4Ghz', 'Status SSID 5Ghz', 'Voltar'])
         if opcssid == 1:
             ssid_2g = input('Digite o nome do SSID para a rede 2.4Ghz: ')
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -923,7 +902,7 @@ class twibi:
                     return self.ssid()
         elif opcssid == 2:
             ssid_5g = input('Digite o nome do SSID para a rede 5Ghz: ')
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -958,7 +937,7 @@ class twibi:
                     exit()
                     return self.ssid()
         elif opcssid == 3:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -995,7 +974,7 @@ class twibi:
                     return self.ssid()
 
         elif opcssid == 4:
-            with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
                 pwd = tn.read_until(b"login:").decode('utf-8')
                 pwd_str = str(pwd)
@@ -1039,34 +1018,29 @@ class twibi:
             os.system('cls')
             return self.ssid()
 
-    def ip_default(self, host="192.168.5.1", port=53, timeout=2):
+    def verify_IP(self, port=53, timeout=2):
+        gateway = netifaces.gateways()
+        self.default_gateway = gateway['default'][netifaces.AF_INET][0]
         try:
             socket.setdefaulttimeout(timeout)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-            return self.enable_telnet_default()
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
+            return self.enable_telnet()
         except socket.error as ex:
-            return self.check_ping()
+            self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI, CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+            time.sleep(5)
+            self.header('INTELBRAS, SEMPRE PRÓXIMA.')
+            exit()
 
-    def check_ping(self, port=53, timeout=2):
-        self.ip_alterado = input('Digite o endereço IP do Twibi: ')
+    def verify_IP_modify(self, port=53, timeout=2):
         try:
             socket.setdefaulttimeout(timeout)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(((self.ip_alterado), port))
-            return self.enable_telnet_modify()
-        except socket.error as ex:
-            print('\033[31mERRO:Desculpe não encontramos o IP digitado. Tente novamente!!!\033[m')
-            time.sleep(3)
-            os.system('cls')
-            return self.check_ping()
+            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.ip_verify, port))
 
-    def verify_apply(self, host="192.168.5.1", port=53, timeout=2):
-
-        try:
-            socket.setdefaulttimeout(timeout)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-            return self.apply_config_default()
         except socket.error as ex:
-            return self.apply_config_modify()
+            self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI, CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+            time.sleep(5)
+            self.header('INTELBRAS, SEMPRE PRÓXIMA.')
+            exit()
 
     def apply_config_default(self):
         with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
@@ -1137,4 +1111,4 @@ class twibi:
                 return self.ipv6()
 
 t = twibi()
-t.ip_default()
+t.verify_IP()
