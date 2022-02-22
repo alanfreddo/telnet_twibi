@@ -56,11 +56,12 @@ class twibi:
     def telnet_habil(self):
         self.header('Habilitando telnet, aguarde...')
 
-    def enable_telnet(self):
+    def enable_telnet(self, timeout=5, port=80):
         while True:
             try:
-                # gateway = netifaces.gateways()
-                # self.default_gateway = gateway['default'][netifaces.AF_INET][0]
+                gateway = netifaces.gateways()
+                self.default_gateway = gateway['default'][netifaces.AF_INET][0]
+                # print(self.default_gateway)
                 if self.default_gateway == '192.168.5.1':
                     self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
                     os.system('cls')
@@ -84,18 +85,35 @@ class twibi:
                         # print(r.text)
 
                 else:
-                    self.ip_verify = input('Digite o endereço IP do seu Twibi: ')
-                    timeout = 2
-                    port = 53
-                    self.default_gateway = self.ip_verify
+                    self.default_gateway = input('Digite o endereço IP do seu Twibi: ')
                     try:
                         socket.setdefaulttimeout(timeout)
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
-                        return self.senha_admin
+                        pass
                     except socket.error as ex:
-                        self.header('\033[31mERRO: SEM CONEXÃO COM O IP DIGITADO, TENTE NOVAMENTE!\033[m')
+                        self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI, CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+                        time.sleep(5)
+                        self.enable_telnet()
+                    self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
+                    os.system('cls')
+                    hash = hashlib.md5(self.senha_admin)
+                    encrypt = hash.hexdigest()
+                    self.telnet_habil()
+                    # print(self.default_gateway)
+                    r = requests.post('http://' + f'{self.default_gateway}' + '/goform/set', json={"login": {"pwd": f'{encrypt}'}}, timeout=5)
+                    cookies1 = dict(r.cookies)
+                    # print(cookies1)
+                    # print(f"Status Code: {r.status_code}, Response: {r.json()}")
+                    if f'{r.json()}' == "{'errcode': '1'}":
+                        time.sleep(2)
+                        os.system('cls')
+                        print('\033[31mERRO: Senha incorreta, tente novamente! \033[m')
                         time.sleep(3)
-                        return self.enable_telnet()
+                        os.system('cls')
+                        return self.senha_admin
+                    else:
+                        r = requests.get('http://' + f'{self.default_gateway}' + '/goform/telnet', cookies=cookies1, timeout=10)
+                        # print(r.text)
 
             except Exception:
                 logging.debug('Twibi - telnet enabled!')
@@ -1018,9 +1036,8 @@ class twibi:
             os.system('cls')
             return self.ssid()
 
-    def verify_IP(self, port=53, timeout=2):
-        gateway = netifaces.gateways()
-        self.default_gateway = gateway['default'][netifaces.AF_INET][0]
+    def verify_IP(self, port=80, timeout=2):
+        self.default_gateway = '172.16.21.39'
         try:
             socket.setdefaulttimeout(timeout)
             socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
@@ -1031,16 +1048,15 @@ class twibi:
             self.header('INTELBRAS, SEMPRE PRÓXIMA.')
             exit()
 
-    def verify_IP_modify(self, port=53, timeout=2):
-        try:
-            socket.setdefaulttimeout(timeout)
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.ip_verify, port))
+    def verify_IP_modify(self):
 
-        except socket.error as ex:
-            self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI, CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
-            time.sleep(5)
-            self.header('INTELBRAS, SEMPRE PRÓXIMA.')
-            exit()
+        logging.debug('Twibi - telnet enabled!')
+        time.sleep(1)
+        os.system('cls')
+        self.telnet_ok()
+        time.sleep(2)
+        os.system('cls')
+        self.menu_principal()
 
     def apply_config_default(self):
         with Telnet('192.168.5.1', 23, timeout=3) as tn:  # LOGIN TELNET
@@ -1111,4 +1127,4 @@ class twibi:
                 return self.ipv6()
 
 t = twibi()
-t.verify_IP()
+t.enable_telnet()
