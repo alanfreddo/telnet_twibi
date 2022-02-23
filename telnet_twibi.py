@@ -91,7 +91,7 @@ class twibi:
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
                         pass
                     except socket.error as ex:
-                        self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI, CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+                        self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
                         time.sleep(5)
                         self.enable_telnet()
                     self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
@@ -110,7 +110,7 @@ class twibi:
                         print('\033[31mERRO: Senha incorreta, tente novamente! \033[m')
                         time.sleep(3)
                         os.system('cls')
-                        return self.senha_admin
+                        return
                     else:
                         r = requests.get('http://' + f'{self.default_gateway}' + '/goform/telnet', cookies=cookies1, timeout=10)
                         # print(r.text)
