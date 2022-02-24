@@ -40,11 +40,11 @@ class twibi:
 
     def lembrete(self):
         print(self.linha())
-        print('ANTES DE CONTINUAR HABILITE O TELNET DO SEU PRODUTO')
+        print('ANTES DE CONTINUAR, HABILITE O TELNET DO SEU PRODUTO')
         print(self.linha())
 
     def menu(self, lista):
-        self.header('MENU PRINCIPAL')
+        # self.header('MENU PRINCIPAL')
         c = 1
         for item in lista:
             print(f'[{c}] - {item}')
@@ -56,7 +56,7 @@ class twibi:
     def telnet_habil(self):
         self.header('Habilitando telnet, aguarde...')
 
-    def enable_telnet(self, timeout=5, port=80):
+    def enable_telnet(self, timeout=5, port=9000):
         while True:
             try:
                 gateway = netifaces.gateways()
@@ -91,7 +91,7 @@ class twibi:
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
                         pass
                     except socket.error as ex:
-                        self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+                        self.header('\033[31mERRO: SEM CONEXÃO COM O IP ' + f'{self.default_gateway}' + ', VERIFIQUE O IP DIGITADO!\033[m')
                         time.sleep(3)
                         self.enable_telnet()
                     self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
@@ -135,6 +135,7 @@ class twibi:
         self.header('CONFIGURACAO APLICADA COM SUCESSO')
 
     def menu_principal(self):
+        self.header('MENU PRINCIPAL')
         answer = self.menu(['Canal Wi-Fi 5Ghz', 'Canal Wi-Fi 2.4Ghz', 'Largura de banda 5Ghz', 'Largura de banda 2.4Ghz', 'SIP ALG', 'IPv6', 'SSID', 'Aplicar Configurações', 'Sair'])
         if answer == 1:
             os.system('cls')
@@ -181,6 +182,7 @@ class twibi:
             return self.menu_principal()
 
     def canais_5(self):
+        self.header('CANAL 5Ghz')
         copc5 = self.menu(['Alterar Canal', 'Visualizar Canal', 'Voltar'])
         if copc5 == 1:
             self.header('Canais suportados: 36, 40, 44, 46, 48, 149, 153, 157 e 161')
@@ -306,6 +308,7 @@ class twibi:
             return self.canais_2()
 
     def canais_2(self):
+        self.header('CANAL 2.4Ghz')
         copc2 = self.menu(['Alterar Canal', 'Visualizar canal', 'Voltar'])
         if copc2 == 1:
             self.header('Canais suportados: 1 até 13')
@@ -434,6 +437,7 @@ class twibi:
             return self.canais_2()
 
     def largura_5G(self):
+        self.header('LARGURA DE BANDA 5Ghz')
         lopc5 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Voltar'])
         if lopc5 == 1:
             self.header('Larguras de banda suportadas para 5Ghz: 20, 40 e 80')
@@ -523,6 +527,7 @@ class twibi:
             return self.largura_5G()
 
     def largura_2G(self):
+        self.header('LARGURA DE BANDA 2.4Ghz')
         lopc2 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Voltar'])
         if lopc2 == 1:
             self.header('Larguras de banda suportadas para 2.4Ghz: 20 e 40')
@@ -613,6 +618,7 @@ class twibi:
             return self.largura_2G()
 
     def sip_alg(self):
+        self.header('SIP ALG')
         alg = self.menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
         if alg == 1:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
@@ -749,6 +755,7 @@ class twibi:
             return self.sip_alg()
 
     def ipv6(self):
+        self.header('IPV6')
         opcipv6 = self.menu(['Ativar', 'Desativar', 'Status', 'Voltar'])
         if opcipv6 == 1:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
@@ -869,6 +876,7 @@ class twibi:
             return self.ipv6()
 
     def ssid(self):
+        self.header('SSID WIFI')
         opcssid = self.menu(['Alterar SSID 2.4Ghz', 'Alterar SSID 5Ghz', 'Status SSID 2.4Ghz', 'Status SSID 5Ghz', 'Voltar'])
         if opcssid == 1:
             ssid_2g = input('Digite o nome do SSID para a rede 2.4Ghz: ')
@@ -1057,46 +1065,56 @@ class twibi:
                 time.sleep(3)
                 exit()
 
-    def modelo(self, timeout=3, port=9000):
+    def twibi_giga(self, timeout=3, port=9000):
+        while True:
+            try:
+                gateway = netifaces.gateways()
+                self.default_gateway = gateway['default'][netifaces.AF_INET][0]
+                # print(self.default_gateway)
+                if self.default_gateway == '192.168.5.1':
+                    self.lembrete()
+                    time.sleep(3)
+                    os.system('cls')
+                    self.menu_principal()
+
+                else:
+                    self.default_gateway = input('Digite o endereço IP do seu Twibi: ')
+                    try:
+                        socket.setdefaulttimeout(timeout)
+                        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
+                        self.lembrete()
+                        time.sleep(3)
+                        os.system('cls')
+                        self.menu_principal()
+                    except socket.error as ex:
+                        self.header(
+                            '\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+                        time.sleep(3)
+                        self.modelo()
+            except Exception:
+                logging.debug('Twibi - telnet enabled!')
+                time.sleep(1)
+                os.system('cls')
+                # self.telnet_ok()
+                # time.sleep(2)
+                # os.system('cls')
+                self.menu_principal()
+
+    def modelo(self):
+        self.header('MODELO DO PRODUTO')
         print('Qual o modelo do seu Twibi?')
         modelo_id = self.menu(['Twibi Fast / Giga +', 'Twibi Giga'])
         if modelo_id == 1:
             self.enable_telnet()
 
         elif modelo_id == 2:
-            while True:
-                try:
-                    gateway = netifaces.gateways()
-                    self.default_gateway = gateway['default'][netifaces.AF_INET][0]
-                    # print(self.default_gateway)
-                    if self.default_gateway == '192.168.5.1':
-                        self.lembrete()
-                        time.sleep(3)
-                        os.system('cls')
-                        self.menu_principal()
-
-                    else:
-                        self.default_gateway = input('Digite o endereço IP do seu Twibi: ')
-                        try:
-                            socket.setdefaulttimeout(timeout)
-                            socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
-                            pass
-                        except socket.error as ex:
-                            self.header('\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
-                            time.sleep(3)
-                except Exception:
-                    logging.debug('Twibi - telnet enabled!')
-                    time.sleep(1)
-                    os.system('cls')
-                    # self.telnet_ok()
-                    # time.sleep(2)
-                    # os.system('cls')
-                    self.menu_principal()
+            self.twibi_giga()
 
         else:
             print('\033[31mERRO: Você digitou uma opção inválida, tente novamente! \033[m')
             time.sleep(3)
             os.system('cls')
             return self.modelo()
+
 t = twibi()
 t.modelo()
