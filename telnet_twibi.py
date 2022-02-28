@@ -20,12 +20,12 @@ class twibi:
             except (ValueError, TypeError):
                 print('\033[31mERRO: Digite um número inteiro válido! \033[m')
                 time.sleep(2)
-                os.system('cls')
+                # os.system('cls')
                 continue
             except (KeyboardInterrupt):
-                print('\n\033[31mTempo esgotado, tente novamente. \033[m')
+                print('\n\033[31mTempo esgotado, sessão encerrada. \033[m')
                 time.sleep(2)
-                os.system('cls')
+                # os.system('cls')
                 return 0
             else:
                 return n
@@ -132,7 +132,10 @@ class twibi:
         self.header('Telnet habilitado com sucesso!!!')
 
     def OK(self):
-        self.header('CONFIGURACAO APLICADA COM SUCESSO')
+        self.header('CONFIGURAÇÃO REALIZADA COM SUCESSO, APLIQUE AS CONFIGURAÇÕES NO MENU PRINCIPAL')
+
+    def apply_ok(self):
+        self.header('CONFIGURAÇÕES APLICADAS COM SUCESSO!')
 
     def menu_principal(self):
         self.header('MENU PRINCIPAL')
@@ -186,6 +189,7 @@ class twibi:
         copc5 = self.menu(['Alterar Canal', 'Visualizar Canal', 'Voltar'])
         if copc5 == 1:
             self.header('Canais suportados: 36, 40, 44, 46, 48, 149, 153, 157 e 161')
+            self.header('Digite 0 para cancelar')
             canal_5 = self.leiaInt('Digite o canal desejado: ')
             if (canal_5 == 36) or (canal_5 == 40) or (canal_5 == 44) or (canal_5 == 46) or (canal_5 == 48) or (
                     canal_5 == 149) or (canal_5 == 153) or (canal_5 == 157) or (canal_5 == 161):
@@ -210,7 +214,7 @@ class twibi:
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
-                            return self.canais_5()
+                            return self.menu_principal()
                         else:
                             tn.write(b'cfm set wl5g.lock.channel ' + f'{canal_5:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
@@ -223,7 +227,7 @@ class twibi:
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
-                            return self.canais_5()
+                            return self.menu_principal()
                     elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                         tn.write(b'root\r\n')
                         tn.read_until(b"Password:")
@@ -242,7 +246,7 @@ class twibi:
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
-                            return self.canais_5()
+                            return self.menu_principal()
                         else:
                             tn.write(b'cfm set wl5g.lock.channel ' + f'{canal_5:"^4}'.encode('ascii') + b'\n')
                             tn.read_until(b"~ # ")
@@ -255,7 +259,11 @@ class twibi:
                             self.OK()
                             time.sleep(3)
                             os.system('cls')
-                            return self.canais_5()
+                            return self.menu_principal()
+
+            elif canal_5 == 0:
+                return self.canais_5()
+
             else:
                 print('\033[31mERRO: Você digitou um canal inválido, tente novamente! \033[m')
                 time.sleep(3)
@@ -312,6 +320,7 @@ class twibi:
         copc2 = self.menu(['Alterar Canal', 'Visualizar canal', 'Voltar'])
         if copc2 == 1:
             self.header('Canais suportados: 1 até 13')
+            self.header('Digite 0 para cancelar')
             canal_2 = self.leiaInt('Digite o canal desejado: ')
             if (canal_2 == 1) or (canal_2 == 2) or (canal_2 == 3) or (canal_2 == 4) or (canal_2 == 5) or (canal_2 == 6) or (
                     canal_2 == 7) or (canal_2 == 8) or (canal_2 == 9) or (canal_2 == 10) or (canal_2 == 11) or (
@@ -338,7 +347,7 @@ class twibi:
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            return self.canais_2()
+                            return self.menu_principal()
                         else:
                             tn.write(b'cfm set auto_channel "0"\n')
                             tn.read_until(b"~ # ")
@@ -351,7 +360,7 @@ class twibi:
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            return self.canais_2()
+                            return self.menu_principal()
                     elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                         tn.write(b'root\r\n')
                         tn.read_until(b"Password:")
@@ -370,7 +379,7 @@ class twibi:
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            return self.canais_2()
+                            return self.menu_principal()
                         else:
                             tn.write(b'cfm set auto_channel "0"\n')
                             tn.read_until(b"~ # ")
@@ -385,7 +394,11 @@ class twibi:
                             os.system('cls')
                             self.OK()
                             time.sleep(3)
-                            return self.canais_2()
+                            return self.menu_principal()
+
+            elif canal_2 == 0:
+                return self.canais_2()
+
             else:
                 print('\033[31mERRO: Você digitou um canal inválido, tente novamente! \033[m')
                 time.sleep(3)
@@ -441,6 +454,7 @@ class twibi:
         lopc5 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Voltar'])
         if lopc5 == 1:
             self.header('Larguras de banda suportadas para 5Ghz: 20, 40 e 80')
+            self.header('Digite 0 para cancelar')
             largura_5 = self.leiaInt('Qual a largura de banda 5Ghz você deseja: ')
             if (largura_5 == 20) or (largura_5 == 40) or (largura_5 == 80):
                 with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
@@ -460,7 +474,7 @@ class twibi:
                         os.system('cls')
                         self.OK()
                         time.sleep(3)
-                        return self.largura_5G()
+                        return self.menu_principal()
                     elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                         tn.write(b'root\r\n')
                         tn.read_until(b"Password:")
@@ -474,7 +488,11 @@ class twibi:
                         os.system('cls')
                         self.OK()
                         time.sleep(1)
-                        return self.largura_5G()
+                        return self.menu_principal()
+
+            elif largura_5 == 0:
+                return self.largura_5G()
+
             else:
                 print('\033[31mERRO: Você digitou largura de banda inválida, tente novamente! \033[m')
                 time.sleep(3)
@@ -531,6 +549,7 @@ class twibi:
         lopc2 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Voltar'])
         if lopc2 == 1:
             self.header('Larguras de banda suportadas para 2.4Ghz: 20 e 40')
+            self.header('Digite 0 para cancelar')
             largura_2 = self.leiaInt('Qual a largura de banda 2.4Ghz você deseja: ')
             if (largura_2 == 20) or (largura_2 == 40):
                 with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
@@ -550,7 +569,7 @@ class twibi:
                         os.system('cls')
                         self.OK()
                         time.sleep(3)
-                        return self.largura_2G()
+                        return self.menu_principal()
                     elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                         tn.write(b'root\r\n')
                         tn.read_until(b"Password:")
@@ -564,7 +583,11 @@ class twibi:
                         os.system('cls')
                         self.OK()
                         time.sleep(1)
-                        return self.largura_2G()
+                        return self.menu_principal()
+
+            elif largura_2 == 0:
+                return self.largura_2G()
+
             else:
                 print('\033[31mERRO: Você digitou uma largura de banda inválido, tente novamente! \033[m')
                 time.sleep(3)
@@ -642,7 +665,7 @@ class twibi:
                     # os.system('cls')
                     # self.OK()
                     # time.sleep(1)
-                    return self.sip_alg()
+                    return self.menu_principal()
                 elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                     tn.write(b'root\r\n')
                     tn.read_until(b"Password:")
@@ -660,7 +683,7 @@ class twibi:
                     # os.system('cls')
                     # self.OK()
                     # time.sleep(1)
-                    return self.sip_alg()
+                    return self.menu_principal()
         elif alg == 2:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
@@ -683,7 +706,7 @@ class twibi:
                     # os.system('cls')
                     # self.OK()
                     # time.sleep(1)
-                    return self.sip_alg()
+                    return self.menu_principal()
                 elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                     tn.write(b'root\r\n')
                     tn.read_until(b"Password:")
@@ -701,7 +724,7 @@ class twibi:
                     # os.system('cls')
                     # self.OK()
                     # time.sleep(1)
-                    return self.sip_alg()
+                    return self.menu_principal()
         elif alg == 3:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
@@ -775,7 +798,7 @@ class twibi:
                     self.OK()
                     time.sleep(3)
                     os.system('cls')
-                    return self.ipv6()
+                    return self.menu_principal()
                 elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                     tn.write(b'root\r\n')
                     tn.read_until(b"Password:")
@@ -789,7 +812,7 @@ class twibi:
                     self.OK()
                     time.sleep(3)
                     os.system('cls')
-                    return self.ipv6()
+                    return self.menu_principal()
         elif opcipv6 == 2:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
@@ -808,7 +831,7 @@ class twibi:
                     self.OK()
                     time.sleep(3)
                     os.system('cls')
-                    return self.ipv6()
+                    return self.menu_principal()
                 elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
                     tn.write(b'root\r\n')
                     tn.read_until(b"Password:")
@@ -822,7 +845,7 @@ class twibi:
                     self.OK()
                     time.sleep(3)
                     os.system('cls')
-                    return self.ipv6()
+                    return self.menu_principal()
         elif opcipv6 == 3:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
@@ -879,73 +902,84 @@ class twibi:
         self.header('SSID WIFI')
         opcssid = self.menu(['Alterar SSID 2.4Ghz', 'Alterar SSID 5Ghz', 'Status SSID 2.4Ghz', 'Status SSID 5Ghz', 'Voltar'])
         if opcssid == 1:
+            self.header('Digite 0 para cancelar')
             ssid_2g = input('Digite o nome do SSID para a rede 2.4Ghz: ')
-            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
-                # tn.set_debuglevel(1)
-                pwd = tn.read_until(b"login:").decode('utf-8')
-                pwd_str = str(pwd)
-                if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
-                    tn.write(b'root\r\n')
-                    tn.read_until(b"Password:")
-                    tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
-                    # tn.interact()
-                    tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl2g.ssid0.ssid ' + f'"{ssid_2g}"'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    # tn.write(b'reboot\n')
-                    # tn.read_until(b"~ # ")
-                    self.OK()
-                    time.sleep(3)
-                    os.system('cls')
-                    return self.ssid()
-                elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
-                    tn.write(b'root\r\n')
-                    tn.read_until(b"Password:")
-                    tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
-                    # tn.interact()
-                    tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl2g.ssid0.ssid ' + f'"{ssid_2g}"'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    # tn.write(b'reboot\n')
-                    # tn.read_until(b"~ # ")
-                    self.OK()
-                    time.sleep(3)
-                    os.system('cls')
-                    return self.ssid()
+            if ssid_2g == '0':
+                return self.ssid()
+
+            else:
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
+                    # tn.set_debuglevel(1)
+                    pwd = tn.read_until(b"login:").decode('utf-8')
+                    pwd_str = str(pwd)
+                    if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                        tn.write(b'root\r\n')
+                        tn.read_until(b"Password:")
+                        tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                        # tn.interact()
+                        tn.read_until(b"~ # ")
+                        tn.write(b'cfm set wl2g.ssid0.ssid ' + f'"{ssid_2g}"'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        # tn.write(b'reboot\n')
+                        # tn.read_until(b"~ # ")
+                        self.OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        return self.menu_principal()
+                    elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                        tn.write(b'root\r\n')
+                        tn.read_until(b"Password:")
+                        tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                        # tn.interact()
+                        tn.read_until(b"~ # ")
+                        tn.write(b'cfm set wl2g.ssid0.ssid ' + f'"{ssid_2g}"'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        # tn.write(b'reboot\n')
+                        # tn.read_until(b"~ # ")
+                        self.OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        return self.menu_principal()
         elif opcssid == 2:
+            self.header('Digite 0 para cancelar')
             ssid_5g = input('Digite o nome do SSID para a rede 5Ghz: ')
-            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
-                # tn.set_debuglevel(1)
-                pwd = tn.read_until(b"login:").decode('utf-8')
-                pwd_str = str(pwd)
-                if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
-                    tn.write(b'root\r\n')
-                    tn.read_until(b"Password:")
-                    tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
-                    # tn.interact()
-                    tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl5g.ssid0.ssid ' + f'"{ssid_5g}"'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    # tn.write(b'reboot\n')
-                    # tn.read_until(b"~ # ")
-                    self.OK()
-                    time.sleep(3)
-                    os.system('cls')
-                    return self.ssid()
-                elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
-                    tn.write(b'root\r\n')
-                    tn.read_until(b"Password:")
-                    tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
-                    # tn.interact()
-                    tn.read_until(b"~ # ")
-                    tn.write(b'cfm set wl5g.ssid0.ssid ' + f'"{ssid_5g}"'.encode('ascii') + b'\n')
-                    tn.read_until(b"~ # ")
-                    # tn.write(b'reboot\n')
-                    # tn.read_until(b"~ # ")
-                    self.OK()
-                    time.sleep(3)
-                    os.system('cls')
-                    return self.ssid()
+            self.header('Digite 0 para cancelar')
+            if ssid_5g == '0':
+                return self.ssid()
+
+            else:
+                with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
+                    # tn.set_debuglevel(1)
+                    pwd = tn.read_until(b"login:").decode('utf-8')
+                    pwd_str = str(pwd)
+                    if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                        tn.write(b'root\r\n')
+                        tn.read_until(b"Password:")
+                        tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                        # tn.interact()
+                        tn.read_until(b"~ # ")
+                        tn.write(b'cfm set wl5g.ssid0.ssid ' + f'"{ssid_5g}"'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        # tn.write(b'reboot\n')
+                        # tn.read_until(b"~ # ")
+                        self.OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        return self.menu_principal()
+                    elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                        tn.write(b'root\r\n')
+                        tn.read_until(b"Password:")
+                        tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                        # tn.interact()
+                        tn.read_until(b"~ # ")
+                        tn.write(b'cfm set wl5g.ssid0.ssid ' + f'"{ssid_5g}"'.encode('ascii') + b'\n')
+                        tn.read_until(b"~ # ")
+                        # tn.write(b'reboot\n')
+                        # tn.read_until(b"~ # ")
+                        self.OK()
+                        time.sleep(3)
+                        os.system('cls')
+                        return self.menu_principal()
         elif opcssid == 3:
             with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
                 # tn.set_debuglevel(1)
@@ -1042,7 +1076,7 @@ class twibi:
                 tn.write(b'reboot\n')
                 tn.read_until(b"~ # ")
                 os.system('cls')
-                self.OK()
+                self.apply_ok()
                 time.sleep(3)
                 os.system('cls')
                 self.header('INTELBRAS, SEMPRE PRÓXIMA.')
@@ -1058,7 +1092,7 @@ class twibi:
                 tn.write(b'reboot\n')
                 tn.read_until(b"~ # ")
                 os.system('cls')
-                self.OK()
+                self.apply_ok()
                 time.sleep(3)
                 os.system('cls')
                 self.header('INTELBRAS, SEMPRE PRÓXIMA.')
