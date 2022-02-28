@@ -91,7 +91,7 @@ class twibi:
                         socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((self.default_gateway, port))
                         pass
                     except socket.error as ex:
-                        self.header('\033[31mERRO: SEM CONEXÃO COM O IP ' + f'{self.default_gateway}' + ', VERIFIQUE O IP DIGITADO!\033[m')
+                        self.header('\033[31mERRO: SEM CONEXÃO COM O IP ' + f'{self.default_gateway}' + ', VERIFIQUE O IP DIGITADO! \033[m')
                         time.sleep(3)
                         self.enable_telnet()
                     self.senha_admin = getpass.getpass("Digite sua senha de administrador do Twibi: ").encode()
@@ -179,7 +179,7 @@ class twibi:
             exit()
 
         else:
-            print('\033[31mERRO: Digite uma opção válida!\033[m')
+            print('\033[31mERRO: Digite uma opção válida! \033[m')
             time.sleep(3)
             os.system('cls')
             return self.menu_principal()
@@ -1122,7 +1122,7 @@ class twibi:
                         self.menu_principal()
                     except socket.error as ex:
                         self.header(
-                            '\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE!\033[m')
+                            '\033[31mERRO: SEM CONEXÃO COM O TWIBI UTILIZANDO O IP DIGITADO ' + f'{self.default_gateway}' + ', CONECTE O TWIBI NO SEU COMPUTADOR E TENTE NOVAMENTE! \033[m')
                         time.sleep(3)
                         self.modelo()
             except Exception:
