@@ -139,40 +139,36 @@ class twibi:
 
     def menu_principal(self):
         self.header('MENU PRINCIPAL')
-        answer = self.menu(['Canal Wi-Fi 5Ghz', 'Canal Wi-Fi 2.4Ghz', 'Largura de banda 5Ghz', 'Largura de banda 2.4Ghz', 'SIP ALG', 'IPv6', 'SSID', 'Aplicar Configurações', 'Sair'])
+        answer = self.menu(['Canal Wi-Fi ', 'Largura de banda', 'SIP ALG', 'IPv6', 'SSID', 'DNS', 'Aplicar Configurações', 'Sair'])
         if answer == 1:
             os.system('cls')
-            self.canais_5()
+            self.opc_canal()
 
         elif answer == 2:
             os.system('cls')
-            self.canais_2()
+            self.opc_largura()
 
         elif answer == 3:
             os.system('cls')
-            self.largura_5G()
+            self.sip_alg()
 
         elif answer == 4:
             os.system('cls')
-            self.largura_2G()
+            self.ipv6()
 
         elif answer == 5:
             os.system('cls')
-            self.sip_alg()
+            self.ssid()
 
         elif answer == 6:
             os.system('cls')
-            self.ipv6()
+            self.dns()
 
         elif answer == 7:
             os.system('cls')
-            self.ssid()
-
-        elif answer ==8:
-            os.system('cls')
             self.apply()
 
-        elif answer == 9:
+        elif answer ==8:
             os.system('cls')
             self.header('INTELBRAS, SEMPRE PRÓXIMA.')
             time.sleep(3)
@@ -183,6 +179,36 @@ class twibi:
             time.sleep(3)
             os.system('cls')
             return self.menu_principal()
+
+    def opc_canal(self):
+        self.header('CANAL 2.4 / 5Ghz')
+        set_canal = self.menu(['Canal Wi-Fi 5Ghz', 'Canal Wi-Fi 2.4Ghz', 'Voltar'])
+        if set_canal == 1:
+            self.canais_5()
+        elif set_canal == 2:
+            self.canais_2()
+        elif set_canal == 3:
+            self.menu_principal()
+        else:
+            print('\033[31mERRO: Digite uma opção válida! \033[m')
+            time.sleep(3)
+            os.system('cls')
+            return self.opc_canal()
+
+    def opc_largura(self):
+        self.header('LARGURA DE BANDA')
+        set_largura = self.menu(['Largura de banda Wi-Fi 5Ghz', 'Largura de banda Wi-Fi 2.4Ghz', 'Voltar'])
+        if set_largura == 1:
+            self.canais_5()
+        elif set_largura == 2:
+            self.canais_2()
+        elif set_largura == 3:
+            self.menu_principal()
+        else:
+            print('\033[31mERRO: Digite uma opção válida! \033[m')
+            time.sleep(3)
+            os.system('cls')
+            return self.opc_largura()
 
     def canais_5(self):
         self.header('CANAL 5Ghz')
@@ -307,7 +333,7 @@ class twibi:
                     time.sleep(5)
                     return self.canais_5()
         elif copc5 == 3:
-            return self.menu_principal()
+            return self.opc_canal()
 
         else:
             print('\033[31mERRO: Você digitou uma opção inválida, tente novamente! \033[m')
@@ -441,7 +467,7 @@ class twibi:
                     time.sleep(5)
                     return self.canais_2()
         elif copc2 == 3:
-            return self.menu_principal()
+            return self.opc_canal()
 
         else:
             print('\033[31mERRO: Você digitou uma opção inválida, tente novamente! \033[m')
@@ -536,7 +562,7 @@ class twibi:
                     return self.largura_5G()
 
         elif lopc5 == 3:
-            return self.menu_principal()
+            return self.opc_largura()
 
         else:
             print('\033[31mERRO: Você digitou uma opção inválida, tente novamente! \033[m')
@@ -632,7 +658,7 @@ class twibi:
                     return self.largura_2G()
 
         elif lopc2 == 3:
-            return self.menu_principal()
+            return self.opc_largura()
 
         else:
             print('\033[31mERRO: Você digitou uma opção inválida, tente novamente! \033[m')
@@ -1061,6 +1087,70 @@ class twibi:
             time.sleep(3)
             os.system('cls')
             return self.ssid()
+
+    def dns(self):
+        self.header('DNS')
+        set_dns = self.menu(['Aplicar DNS Google LAN/WAN', 'Voltar'])
+        if set_dns == 1:
+            with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
+                # tn.set_debuglevel(1)
+                pwd = tn.read_until(b"login:").decode('utf-8')
+                pwd_str = str(pwd)
+                if pwd_str[3:6] == 'Int':  # TWIBI FAST / GIGA
+                    tn.write(b'root\r\n')
+                    tn.read_until(b"Password:")
+                    tn.write(f'{pwd[19:25]}'.encode('ascii') + b'\r\n')
+                    # tn.interact()
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.auto 0\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.hand1 8.8.8.8\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.hand2 1.1.1.1\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.auto 0\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.hand1 8.8.8.8\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.hand2 1.1.1.1\n')
+                    tn.read_until(b"~ # ")
+                    # tn.write(b'reboot\n')
+                    # tn.read_until(b"~ # ")
+                    self.OK()
+                    time.sleep(3)
+                    os.system('cls')
+                    return self.menu_principal()
+                elif pwd_str[3:6] == 'Twi':  # TWIBI GIGA Plus
+                    tn.write(b'root\r\n')
+                    tn.read_until(b"Password:")
+                    tn.write(f'{pwd[15:21]}'.encode('ascii') + b'\r\n')
+                    # tn.interact()
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.auto 0\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.hand1 8.8.8.8\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set wan1.dhcp.dns.hand2 1.1.1.1\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.auto 0\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.hand1 8.8.8.8\n')
+                    tn.read_until(b"~ # ")
+                    tn.write(b'cfm set lan.dns.hand2 1.1.1.1\n')
+                    tn.read_until(b"~ # ")
+                    # tn.write(b'reboot\n')
+                    # tn.read_until(b"~ # ")
+                    self.OK()
+                    time.sleep(3)
+                    os.system('cls')
+                    return self.menu_principal()
+        elif set_dns == 2:
+            self.menu_principal()
+        else:
+            print('\033[31mERRO: Digite uma opção válida! \033[m')
+            time.sleep(3)
+            os.system('cls')
+            return self.dns()
 
     def apply(self):
         with Telnet(self.default_gateway, 23, timeout=3) as tn:  # LOGIN TELNET
