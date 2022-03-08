@@ -589,7 +589,7 @@ class twibi:
 
     def largura_2G(self):
         self.header('LARGURA DE BANDA 2.4Ghz')
-        lopc2 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Voltar'])
+        lopc2 = self.menu(['Alterar Largura de Banda', 'Visualizar Largura de Banda', 'Aplicar Configurações','Voltar'])
         if lopc2 == 1:
             self.header('Larguras de banda suportadas para 2.4Ghz: 20 e 40')
             self.header('Digite 0 para cancelar')
